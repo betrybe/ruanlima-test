@@ -30,6 +30,74 @@ function getSkuFromProductItem(item) {
 
 function cartItemClickListener(event) {
   // coloque seu código aqui
+  function adicionarCarrinho(id, name, price){
+    carrinho.adicionar(id, name, price);
+    carrinho.lista();
+  }
+
+  function removerCarrinho(id){
+    carrinho.remover(id);
+  }
+
+  function cartItemClickListener(){
+    carrinho.limpar();
+  }
+
+  class Carrinho{
+    constructor(){
+      this.produtos = [];
+    }
+
+    adicionar(id, name, price){
+      this.produtos.push({id: id, name: name, price: price});
+    }
+
+    remover(id){
+      for (var i = 0; i < this.produtos.length; i++) {
+        if (this.produtos[i].id == id) {
+          this.produtos.splice(i, 1);
+        }
+      }
+      this.lista();
+    }
+
+    limpar(){
+      this.produtos = new Object;
+      const elValor = document.getElementById('empty-cart');
+      elValor.innerHTML = 'Valor: 0,00';
+      const div = document.getElementById('lista-carrinho');
+      div.innerHTML = '';
+    }
+
+    lista(){
+      const element = document.getElementById('lista-carrinho');
+      element.innerHTML = '';
+      if (this.produtos != null) {
+        var valorFinal = null;
+        for (var i = 0; i < this.produtos.length; i++) {
+          element.innerHTML += `
+          <ul>
+            <li>`+this.produtos[i].name+` </li>
+            <li>Valor: `+this.produtos[i].price+`</li>
+            <li><button type="button" class="btn btn-danger" onClick="removerCarrinho('`+this.produtos[i].id+`')" name="button">Remover</button></li>
+          </ul>
+          `;
+
+          if (valorFinal == null) {
+            valorFinal = this.produtos[i].price;
+          }else{
+            valorFinal = parseFloat(valorFinal) + parseFloat(this.produtos[i].price);
+          }
+        }
+
+        const elValor = document.getElementById('empty-cart');
+        elValor.innerHTML = `Valor Total: `+valorFinal;
+      }
+    }
+
+  }
+  const carrinho = new Carrinho();
+
   function buscar(){
     fetch('https://api.mercadolibre.com/sites/MLB/search?q=computador')
       .then(res => res.json()
