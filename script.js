@@ -1,43 +1,132 @@
-function createProductImageElement(imageSource) {
-  const img = document.createElement('img');
-  img.className = 'item__image';
-  img.src = imageSource;
-  return img;
-}
+  function adicionarCarrinho(id, name, price){
+    carrinho.adicionar(id, name, price);
+    carrinho.lista();
+  }
 
-function createCustomElement(element, className, innerText) {
-  const e = document.createElement(element);
-  e.className = className;
-  e.innerText = innerText;
-  return e;
-}
+  function removerCarrinho(id){
+    carrinho.remover(id);
+  }
 
-function createProductItemElement({ sku, name, image }) {
-  const section = document.createElement('section');
-  section.className = 'item';
+  function cartItemClickListener(){
+    carrinho.limpar();
+  }
 
-  section.appendChild(createCustomElement('span', 'item__sku', sku));
-  section.appendChild(createCustomElement('span', 'item__title', name));
-  section.appendChild(createProductImageElement(image));
-  section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
+  class Carrinho{
+    constructor(){
+      this.produtos = [];
+    }
 
-  return section;
-}
+    adicionar(id, name, price){
+      this.produtos.push({id: id, name: name, price: price});
+      localStorage.setItem('produtos', JSON.stringify(this.produtos));
+    }
 
-function getSkuFromProductItem(item) {
-  return item.querySelector('span.item__sku').innerText;
-}
+    remover(id){
+      for (var i = 0; i < this.produtos.length; i++) {
+        if (this.produtos[i].id == id) {
+          this.produtos.splice(i, 1);
+        }
+      }
+      var storage = localStorage.getItem('produtos');
+      storage = JSON.parse(storage);
+      for (var i = 0; i < storage.length; i++) {
+        if (storage[i].id == id) {
+          storage.splice(i, 1);
+        }
+      }
+      localStorage.setItem('produtos', JSON.stringify(storage));
+      this.lista();
+    }
 
-function cartItemClickListener(event) {
-  // coloque seu código aqui
-}
+    limpar(){
+      this.produtos = [];
+      const elValor = document.getElementById('valor-final');
+      elValor.innerHTML = 'Valor: 0,00';
+      const div = document.getElementById('lista-carrinho');
+      div.innerHTML = '';
+      var storage = localStorage.getItem('produtos');
+      storage = JSON.parse(storage);
+      storage = [];
+      localStorage.setItem('produtos', JSON.stringify(storage));
+    }
 
-function createCartItemElement({ sku, name, salePrice }) {
-  const li = document.createElement('li');
-  li.className = 'cart__item';
-  li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
-  li.addEventListener('click', cartItemClickListener);
-  return li;
-}
+    lista(){
+      var storage = localStorage.getItem('produtos');
+      storage = JSON.parse(storage);
+      if (storage.length > 0 || this.produtos > 0) {
+        const element = document.getElementById('lista-carrinho');
+        element.innerHTML = '';
+        var valorFinal = null;
+        var produtos = [];
+        if (storage.length > 0 ) {
+          produtos = storage;
+        }else{
+          produtos = this.produtos;
+        }
+        for (var i = 0; i < produtos.length; i++) {
+          element.innerHTML += `
+          <ul>
+            <li>`+produtos[i].name+` </li>
+            <li>Valor: `+produtos[i].price+`</li>
+            <li><button type="button" class="btn btn-danger" onClick="removerCarrinho('`+produtos[i].id+`')" name="button">Remover</button></li>
+          </ul>
+          `;
+          if (valorFinal == null) {
+            valorFinal = produtos[i].price;
+          }else{
+            valorFinal = parseFloat(valorFinal) + parseFloat(produtos[i].price);
+          }
+        }
+        const elValor = document.getElementById('valor-final');
+        elValor.innerHTML = `Valor Total: `+valorFinal;
+      }
 
-window.onload = () => { };
+      if (storage.length == 0 && this.produtos == 0) {
+        var limpar = document.getElementById('lista-carrinho');
+        limpar.innerHTML = '';
+        const el = document.getElementById('valor-final');
+        el.innerHTML = '';
+      }
+    }
+
+  }
+
+  const carrinho = new Carrinho();
+
+  function buscar(){
+    var storage = localStorage.getItem('produtos');
+    storage = JSON.parse(storage);
+    if (storage.length > 0 ) {
+      carrinho.lista();
+    }
+    fetch('https://api.mercadolibre.com/sites/MLB/search?q=computador')
+      .then(res => res.json()
+    ).then(
+      res =>{
+        for (var i = 0; i < res.results.length; i++) {
+          createProductItemElement(res.results[i]);
+        }
+      }
+    ).catch(error =>{
+      console.log(error);
+    })
+  }
+
+  function createProductItemElement(produto){
+    var div = document.getElementById('lista-produtos');
+    div.innerHTML += `
+    <div class="col-md-4 col-card">
+      <div class="card">
+        <img class="card-img-top" src="`+produto.thumbnail+`" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">`+produto.title+`</h5>
+          <a href="#" class="btn btn-primary" onClick="adicionarCarrinho('`+produto.id+`', '`+produto.title+`', '`+produto.price+`')">Adicionar</a>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  window.onload = function(){
+    buscar();
+  }
+//comentario para comitar

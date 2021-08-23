@@ -1,22 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="utf-8">
+    <title></title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-
   <body>
-    <section class="container">
-      <section class="items"></section>
-      <section class="cart">
-        <span class="cart__title">Carrinho de compras</span>
-        <button class="empty-cart">Esvaziar carrinho</button>
-        <ol class="cart__items"></ol>
-      </section>
-    </section>
+    <div class="container">
+      <div class="row row-teste">
+        <div class="col-md-8 col-produtos">
+          <h3>Lista de Produtos</h3>
+          <div class="row" id="lista-produtos">
+
+          </div>
+        </div>
+        <div class="col-md-4 col-carrinho">
+          <h3>Carrinho de Compras</h3>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card carrinho-compras">
+                <div id="lista-carrinho">
+
+                </div>
+                <div id="valor-final">
+
+                </div>
+                <div class="col-md-12 col-limpar">
+                  <button type="button" class="btn btn-secondary" onClick="cartItemClickListener()" name="button">Limpar Carrinho</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
